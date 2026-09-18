@@ -1,20 +1,19 @@
 # The Electronic Whole Earth Catalog — Static Recompilation
 
+A recompilation project that measured its own target and found there was nothing
+to recompile. What the disc actually contains is **HyperCard 1.2.2**, and that
+binary is now a named fixture in
+[macrecomp](https://github.com/sp00nznet/macrecomp). This repo holds the
+reconnaissance and the classic-HFS lister that got there.
+
+## Status
+
+**Closed.** v0.2.0 — complete as reconnaissance, and deliberately not growing.
+
 The Electronic Whole Earth Catalog (Broderbund / Point Foundation, 1988) on
-CD-ROM: a Macintosh HyperCard title.
-
-## Project Status: **closed — the disc is a macrecomp fixture, and now a named one.**
-
-The volume is mounted and listed. The conclusion P0 guessed at is now measured,
-and it is stronger than the guess: **the only executable on the disc is
-HyperCard itself.** Broderbund shipped Apple's runtime alongside the content and
-wrote no application of their own.
-
-That executable has now been extracted and identified — it is **HyperCard
-1.2.2**, and it is the binary [macrecomp](https://github.com/sp00nznet/macrecomp)
-is already lifting. Nothing further happens in this repo; work continues there.
-
----
+CD-ROM is a Macintosh HyperCard title. The volume is mounted, listed, and
+identified, and the one executable on it has been extracted and version-stamped.
+Work continues in macrecomp; nothing further happens here.
 
 ## What P0 found
 
@@ -58,17 +57,16 @@ recompiling *this title* is not a thing that can be done, because this title is
 data.
 
 The recompile target is therefore HyperCard itself — a 68k `APPL` with a
-Toolbox/QuickDraw surface, which is exactly what
-[macrecomp](https://github.com/sp00nznet/macrecomp) exists for. The payoff is
-not one catalog: it is every HyperCard stack ever authored. Shufflepuck Cafe
-(Broderbund, 1988, 68k) already proves the path.
+Toolbox/QuickDraw surface, which is exactly what macrecomp exists for. The
+payoff is not one catalog: it is every HyperCard stack ever authored.
+Shufflepuck Cafe (Broderbund, 1988, 68k) already proves the path.
 
 ## What the disc turned out to be good for
 
 macrecomp's corpus listed a "user-supplied CD" carrying "HyperCard 1.x" as
 though it were a second fixture waiting to be brought in. It is not a second
-anything — **it is this disc, and it is the binary macrecomp is already
-working on.** Extracted and measured:
+anything — **it is this disc, and it is the binary macrecomp is already working
+on.** Extracted and measured:
 
 ```
 22 CODE segments, 326,088 bytes
@@ -78,21 +76,90 @@ vers 1 -> "1.2.2  Copyright Apple Computer, Inc. 1987-88"
 ```
 
 Those are the exact figures in macrecomp's coverage table, so the only new fact
-is the version number: the 1.x in the roadmap is **HyperCard 1.2.2**, the 1988
-build, the oldest and simplest one. Coverage against the current HAL re-measured
-at 77% of call sites and 47% of distinct traps.
+is the version number: the 1.x in that roadmap is **HyperCard 1.2.2**, the 1988
+build, the oldest and simplest one. It is now the first row of macrecomp's
+conformance corpus, baselined at 2452/3166 covered call sites.
 
-Getting there needed one fix, and it went upstream where it belongs: macrecomp's
-`extract_resources.py` read DiskCopy 4.2 and raw HFS only, so it parsed a
-CD-ROM from offset 0 and got garbage. A Mac CD starts with an `ER` driver
-descriptor and an Apple partition map, with the HFS volume at whatever block the
+Getting there needed one fix, and it went upstream where it belongs. macrecomp's
+`extract_resources.py` read DiskCopy 4.2 and raw HFS only, so it parsed a CD-ROM
+from offset 0 and got garbage. A Mac CD starts with an `ER` driver descriptor
+and an Apple partition map, with the HFS volume at whatever block the
 `Apple_HFS` entry names — the same map `tools/hfsls.py` here already walked.
-That logic now lives in `load_hfs`, so **every** CD-sourced classic-Mac title is
-reachable, not just this one.
+That logic now lives in macrecomp's `load_hfs`, so **every** CD-sourced
+classic-Mac title is reachable, not just this one.
+
+## Getting Started
+
+From a clean machine.
+
+**Prerequisites**
+
+- Python 3.9 or newer
+- `pip install machfs` (pure Python; nothing to compile)
+- Your own copy of the disc. It is in copyright and is not distributed here.
+
+**Steps**
+
+1. Clone this repo and enter it:
+   ```bash
+   git clone https://github.com/sp00nznet/wholeearth.git
+   cd wholeearth
+   ```
+2. Install the one dependency:
+   ```bash
+   pip install machfs
+   ```
+3. Put your own disc image in `original/` (gitignored). If you have a BIN/CUE
+   rip, convert the Mode1/2352 track to plain sectors first — any tool that
+   strips the 16-byte sync/header and 288-byte ECC per 2352-byte sector will do:
+   ```
+   original/wec.iso
+   ```
+4. Confirm it works:
+   ```bash
+   python tools/hfsls.py original/wec.iso
+   ```
+
+**Expected output** — one line per file (data fork, resource fork,
+TYPE/CREATOR, path), 279 of them, beginning:
 
 ```
-python tools/extract_resources.py /path/to/wec.iso -o work/hypercard
+original/wec.iso  HFS at 15360  volume 'Untitled'
+   4153344      67974  STAK/WILD  /COMMUNICATIONS
+   1622016      67532  STAK/WILD  /COMMUNITY
+         0     400640  APPL/WILD  /HyperCard
 ```
+
+If you see `no CD001` errors or a stack trace from `machfs`, the image is
+probably still raw 2352-byte sectors — go back to step 3.
+
+## Usage
+
+List any classic-HFS Mac disc image, not just this one:
+
+```bash
+python tools/hfsls.py <image>
+```
+
+It walks an Apple partition map if one is present, so Mac CD-ROMs work as well
+as bare floppy volumes.
+
+Self-check (no disc needed):
+
+```bash
+python tools/test_hfsls.py
+```
+
+To go further than listing — extract an application's resources and measure it —
+use macrecomp, which reads this image directly:
+
+```bash
+python macrecomp/tools/extract_resources.py original/wec.iso -o work/hypercard
+```
+
+## Building from source
+
+Nothing to build. Two Python files, one dependency, no compiled artifacts.
 
 ## What is deliberately not being built
 
@@ -100,8 +167,10 @@ A `STAK` parser, and a HyperTalk interpreter behind it. A recompiled HyperCard
 reads its own stacks with its own interpreter — that is the entire point of
 recompiling it rather than reimplementing it, and macrecomp puts a second
 interpreter out of scope for the same reason. The stacks on this disc are input
-to a working HyperCard, not a format project. If HyperCard never gets far
-enough to open a stack, *then* the format is worth reading directly.
+to a working HyperCard, not a format project. If HyperCard never gets far enough
+to open a stack, *then* the format is worth reading directly.
+
+See [ROADMAP.md](ROADMAP.md) for the rest of what is out of scope and why.
 
 ## Is there a Windows version?
 
@@ -110,35 +179,26 @@ only — the 1988 packaging lists Mac Plus/SE/II and an Apple CD SC drive. There
 is no DOS or Windows edition on archive.org or anywhere else, because there was
 never one to dump.
 
-## Where it goes next
-
-Nowhere, and that is the right outcome. The disc is a `macrecomp` input, not a
-project, and it is now wired up as one: macrecomp reads this image directly and
-its roadmap names the fixture. Follow the work at
-[macrecomp](https://github.com/sp00nznet/macrecomp) — the open blocker there is
-entry-point dispatch in the lifter, not anything on this CD.
-
 ## Layout
 
 ```
 wholeearth/
   original/   the .7z, the .bin/.cue, and wec.iso converted from it (gitignored)
   tools/      hfsls.py -- list a classic-HFS Mac disc image
+              test_hfsls.py -- its self-check
   analysis/
   docs/
 ```
-
-## Usage
-
-```
-pip install machfs
-python tools/hfsls.py original/wec.iso
-```
-
-Prints one line per file: data fork size, resource fork size, TYPE/CREATOR, path.
 
 ## Credits
 
 The Electronic Whole Earth Catalog © 1988 Broderbund Software / Point
 Foundation. HyperCard © Apple Computer. This project neither contains nor
 distributes any part of either.
+
+- **[machfs](https://github.com/tashtego/machfs)** by Elliot Nunn — pure-Python
+  HFS parsing. `hfsls.py` stands on it.
+
+## License
+
+MIT — see [LICENSE](LICENSE).

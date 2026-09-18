@@ -1,0 +1,27 @@
+name: CI
+
+# No branch filter: the repo is closed, and a workflow that names one branch
+# quietly stops running the day that branch is renamed.
+on: [push, pull_request]
+
+jobs:
+  tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        run: pip install machfs ruff
+
+      - name: Lint
+        run: ruff check tools/
+
+      - name: Syntax
+        run: python -m compileall -q tools/
+
+      # Needs no disc image: the partition map is built in the test.
+      - name: Self-check
+        run: python tools/test_hfsls.py
