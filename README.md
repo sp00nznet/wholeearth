@@ -8,7 +8,7 @@ reconnaissance and the classic-HFS lister that got there.
 
 ## Status
 
-**Closed.** v0.2.0 — complete as reconnaissance, and deliberately not growing.
+**Closed.** Complete as reconnaissance, untagged, and deliberately not growing.
 
 The Electronic Whole Earth Catalog (Broderbund / Point Foundation, 1988) on
 CD-ROM is a Macintosh HyperCard title. The volume is mounted, listed, and

@@ -4,12 +4,11 @@ All notable changes to this project are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); this project uses
 [SemVer](https://semver.org/).
 
+Nothing is tagged yet, so everything below is unreleased. The repo reached its
+conclusion before it reached a version, which is the honest ordering for a
+reconnaissance project that found there was nothing to build.
+
 ## [Unreleased]
-
-## [0.2.0] - 2026-09-17
-
-The version that closes the repo out: the disc's one executable is identified,
-and its role is settled.
 
 ### Added
 
@@ -22,10 +21,24 @@ and its role is settled.
   fixture** — it is this disc, supplying the binary macrecomp is working on. It
   is now the first row of macrecomp's conformance corpus, baselined at 2452/3166
   covered call sites.
+- **P0 reconnaissance.** The disc is Mode1/2352 BIN/CUE wrapping a classic HFS
+  volume inside an Apple partition map — no ISO 9660 descriptor, and
+  `drEmbedSigWord` zero, so classic HFS rather than HFS+ in a wrapper. Neither
+  7-Zip nor [bulkhead](https://github.com/sp00nznet/bulkhead) reads it;
+  bulkhead's driver is HFS+/HFSX only and refuses the classic signature by
+  design.
+- `tools/hfsls.py` — list a classic-HFS Mac disc image (data fork, resource
+  fork, TYPE/CREATOR, path), walking an Apple partition map when present.
+- The finding that drove everything after it: **the only executable on the disc
+  is HyperCard.** 279 files, 450 MB, 76% of it audio; the catalog itself is 19
+  `STAK/WILD` HyperCard stacks. Broderbund shipped Apple's runtime alongside the
+  content and wrote no application of their own, so there is no Broderbund
+  binary to statically recompile.
+- `tools/test_hfsls.py` — self-check for the partition-map walk, including an
+  `Apple_HFS` entry that is not the first in the map, and the bare-volume
+  fallback. No disc image needed.
 - `ROADMAP.md` and this file, per house rules.
-- `tools/test_hfsls.py` — self-check for the Apple partition-map walk and the
-  bare-volume fallback. No disc image needed.
-- CI on every push and PR: the self-check plus a byte-compile of the tools.
+- CI on every push and PR: lint, byte-compile, and the self-check.
 - README restructured to the house section order, with a Getting Started that
   works from a clean machine and states the expected output.
 
@@ -46,24 +59,4 @@ and its role is settled.
   upstream in the container layer, where it covers every CD-sourced classic-Mac
   title rather than only this disc.
 
-## [0.1.0] - 2026-09-14
-
-### Added
-
-- **P0 reconnaissance.** The disc is Mode1/2352 BIN/CUE wrapping a classic HFS
-  volume inside an Apple partition map — no ISO 9660 descriptor, and
-  `drEmbedSigWord` zero, so classic HFS rather than HFS+ in a wrapper. Neither
-  7-Zip nor [bulkhead](https://github.com/sp00nznet/bulkhead) reads it;
-  bulkhead's driver is HFS+/HFSX only and refuses the classic signature by
-  design.
-- `tools/hfsls.py` — list a classic-HFS Mac disc image (data fork, resource
-  fork, TYPE/CREATOR, path), walking an Apple partition map when present.
-- The finding that drove everything after it: **the only executable on the disc
-  is HyperCard.** 279 files, 450 MB, 76% of it audio; the catalog itself is 19
-  `STAK/WILD` HyperCard stacks. Broderbund shipped Apple's runtime alongside the
-  content and wrote no application of their own, so there is no Broderbund
-  binary to statically recompile.
-
-[Unreleased]: https://github.com/sp00nznet/wholeearth/compare/v0.2.0...HEAD
-[0.2.0]: https://github.com/sp00nznet/wholeearth/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/sp00nznet/wholeearth/releases/tag/v0.1.0
+[Unreleased]: https://github.com/sp00nznet/wholeearth/commits/main/
