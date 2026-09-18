@@ -3,12 +3,16 @@
 The Electronic Whole Earth Catalog (Broderbund / Point Foundation, 1988) on
 CD-ROM: a Macintosh HyperCard title.
 
-## Project Status: **P0 complete — and there is nothing here to recompile.**
+## Project Status: **closed — the disc is a macrecomp fixture, and now a named one.**
 
 The volume is mounted and listed. The conclusion P0 guessed at is now measured,
 and it is stronger than the guess: **the only executable on the disc is
 HyperCard itself.** Broderbund shipped Apple's runtime alongside the content and
 wrote no application of their own.
+
+That executable has now been extracted and identified — it is **HyperCard
+1.2.2**, and it is the binary [macrecomp](https://github.com/sp00nznet/macrecomp)
+is already lifting. Nothing further happens in this repo; work continues there.
 
 ---
 
@@ -53,18 +57,51 @@ an interpreter that Broderbund licensed and copied onto the disc. Statically
 recompiling *this title* is not a thing that can be done, because this title is
 data.
 
-Two real projects fall out of that, and neither one is this repo:
+The recompile target is therefore HyperCard itself — a 68k `APPL` with a
+Toolbox/QuickDraw surface, which is exactly what
+[macrecomp](https://github.com/sp00nznet/macrecomp) exists for. The payoff is
+not one catalog: it is every HyperCard stack ever authored. Shufflepuck Cafe
+(Broderbund, 1988, 68k) already proves the path.
 
-1. **Recompile HyperCard** — a 68k `APPL` with a Toolbox/QuickDraw surface,
-   which is exactly what [macrecomp](https://github.com/sp00nznet/macrecomp)
-   exists for. The payoff is not one catalog: it is every HyperCard stack ever
-   authored. Shufflepuck Cafe (Broderbund, 1988, 68k) already proves the path.
-2. **Read the STAK format and run HyperTalk** — a format-and-interpreter
-   project, closer to Encarta 97 than to a game. Wanted either way, since a
-   recompiled HyperCard still needs the stacks handed to it.
+## What the disc turned out to be good for
 
-Both want the same first step: a `STAK` parser. Neither wants a repo named after
-one 1988 CD-ROM.
+macrecomp's corpus listed a "user-supplied CD" carrying "HyperCard 1.x" as
+though it were a second fixture waiting to be brought in. It is not a second
+anything — **it is this disc, and it is the binary macrecomp is already
+working on.** Extracted and measured:
+
+```
+22 CODE segments, 326,088 bytes
+1,110 jump-table functions over 21 segments
+3,166 trap call sites, 418 distinct traps
+vers 1 -> "1.2.2  Copyright Apple Computer, Inc. 1987-88"
+```
+
+Those are the exact figures in macrecomp's coverage table, so the only new fact
+is the version number: the 1.x in the roadmap is **HyperCard 1.2.2**, the 1988
+build, the oldest and simplest one. Coverage against the current HAL re-measured
+at 77% of call sites and 47% of distinct traps.
+
+Getting there needed one fix, and it went upstream where it belongs: macrecomp's
+`extract_resources.py` read DiskCopy 4.2 and raw HFS only, so it parsed a
+CD-ROM from offset 0 and got garbage. A Mac CD starts with an `ER` driver
+descriptor and an Apple partition map, with the HFS volume at whatever block the
+`Apple_HFS` entry names — the same map `tools/hfsls.py` here already walked.
+That logic now lives in `load_hfs`, so **every** CD-sourced classic-Mac title is
+reachable, not just this one.
+
+```
+python tools/extract_resources.py /path/to/wec.iso -o work/hypercard
+```
+
+## What is deliberately not being built
+
+A `STAK` parser, and a HyperTalk interpreter behind it. A recompiled HyperCard
+reads its own stacks with its own interpreter — that is the entire point of
+recompiling it rather than reimplementing it, and macrecomp puts a second
+interpreter out of scope for the same reason. The stacks on this disc are input
+to a working HyperCard, not a format project. If HyperCard never gets far
+enough to open a stack, *then* the format is worth reading directly.
 
 ## Is there a Windows version?
 
@@ -75,8 +112,11 @@ never one to dump.
 
 ## Where it goes next
 
-This repo is a holding pen and should probably close. The disc is a `macrecomp`
-input, not a project.
+Nowhere, and that is the right outcome. The disc is a `macrecomp` input, not a
+project, and it is now wired up as one: macrecomp reads this image directly and
+its roadmap names the fixture. Follow the work at
+[macrecomp](https://github.com/sp00nznet/macrecomp) — the open blocker there is
+entry-point dispatch in the lifter, not anything on this CD.
 
 ## Layout
 
