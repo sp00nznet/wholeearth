@@ -6,6 +6,13 @@ binary is now a named fixture in
 [macrecomp](https://github.com/sp00nznet/macrecomp). This repo holds the
 reconnaissance and the classic-HFS lister that got there.
 
+![The catalog's HEALTH section, running under macrecomp's recompiled
+HyperCard 1.2.2](docs/catalog.png)
+
+A frame from macrecomp: the disc's `HEALTH` stack on screen at the Macintosh's
+512x342, reached by clicking from Home through the catalog's table of contents.
+Navigation between cards works; cards deeper in still hit a HyperTalk error.
+
 ## Status
 
 **Closed.** Complete as reconnaissance, untagged, and deliberately not growing.
@@ -13,7 +20,11 @@ reconnaissance and the classic-HFS lister that got there.
 The Electronic Whole Earth Catalog (Broderbund / Point Foundation, 1988) on
 CD-ROM is a Macintosh HyperCard title. The volume is mounted, listed, and
 identified, and the one executable on it has been extracted and version-stamped.
-Work continues in macrecomp; nothing further happens here.
+
+That was the whole job here, and it paid off upstream: macrecomp's recompiled
+HyperCard 1.2.2 now opens the disc's stacks, draws their cards, and follows a
+click from one to the next — the screenshot above. Work continues there;
+nothing further happens in this repo.
 
 ## What P0 found
 
@@ -78,7 +89,7 @@ vers 1 -> "1.2.2  Copyright Apple Computer, Inc. 1987-88"
 Those are the exact figures in macrecomp's coverage table, so the only new fact
 is the version number: the 1.x in that roadmap is **HyperCard 1.2.2**, the 1988
 build, the oldest and simplest one. It is now the first row of macrecomp's
-conformance corpus, baselined at 2452/3166 covered call sites.
+conformance corpus, baselined at 2642/3166 covered call sites (83%).
 
 Getting there needed one fix, and it went upstream where it belongs. macrecomp's
 `extract_resources.py` read DiskCopy 4.2 and raw HFS only, so it parsed a CD-ROM
@@ -167,17 +178,10 @@ A `STAK` parser, and a HyperTalk interpreter behind it. A recompiled HyperCard
 reads its own stacks with its own interpreter — that is the entire point of
 recompiling it rather than reimplementing it, and macrecomp puts a second
 interpreter out of scope for the same reason. The stacks on this disc are input
-to a working HyperCard, not a format project. If HyperCard never gets far enough
-to open a stack, *then* the format is worth reading directly.
+to a working HyperCard, not a format project. That bet has settled: HyperCard
+got far enough to open them, so the format never needed reading directly.
 
 See [ROADMAP.md](ROADMAP.md) for the rest of what is out of scope and why.
-
-## Is there a Windows version?
-
-No. HyperCard never shipped on Windows in any form, and this title was Macintosh
-only — the 1988 packaging lists Mac Plus/SE/II and an Apple CD SC drive. There
-is no DOS or Windows edition on archive.org or anywhere else, because there was
-never one to dump.
 
 ## Layout
 
@@ -186,15 +190,16 @@ wholeearth/
   original/   the .7z, the .bin/.cue, and wec.iso converted from it (gitignored)
   tools/      hfsls.py -- list a classic-HFS Mac disc image
               test_hfsls.py -- its self-check
-  analysis/
-  docs/
+  docs/       catalog.png -- the screenshot above
 ```
 
 ## Credits
 
 The Electronic Whole Earth Catalog © 1988 Broderbund Software / Point
-Foundation. HyperCard © Apple Computer. This project neither contains nor
-distributes any part of either.
+Foundation. HyperCard © Apple Computer. This project contains no code or
+data from either, and distributes neither; the screenshot above is a single
+frame of the running program, included to show what the reconnaissance was
+for.
 
 - **[machfs](https://github.com/tashtego/machfs)** by Elliot Nunn — pure-Python
   HFS parsing. `hfsls.py` stands on it.

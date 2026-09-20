@@ -12,6 +12,27 @@ reconnaissance project that found there was nothing to build.
 
 ### Added
 
+- **A screenshot of the catalog actually running** (`docs/catalog.png`), and the
+  README brought up to date around it. The reconnaissance here pointed at
+  [macrecomp](https://github.com/sp00nznet/macrecomp), and macrecomp's
+  recompiled HyperCard 1.2.2 now opens this disc's stacks, draws their cards,
+  and follows a click from one to the next. The `HEALTH` section is the frame
+  shown. It is a single frame of the running program; no code or data from the
+  disc is in this repo, and the Credits note says so explicitly.
+
+### Changed
+
+- The corpus baseline cited in the README was stale: macrecomp has HyperCard
+  1.2.2 at **2642/3166** covered call sites (83%), not 2452/3166 (77%).
+- "If HyperCard never gets far enough to open a stack, *then* the format is
+  worth reading directly" -- that bet has settled, and the README says which way.
+- Dropped the "Is there a Windows version?" section. The answer is still no, but
+  a README is not the place to litigate a question nobody reading it asked.
+- Layout no longer lists an empty `analysis/`.
+
+
+### Added
+
 - **The disc's HyperCard identified as 1.2.2** (Apple, 1987-88), from its `vers`
   resource. Extracted and measured: 22 `CODE` segments, 326,088 bytes, 1,110
   jump-table functions over 21 segments, 3,166 trap call sites across 418
