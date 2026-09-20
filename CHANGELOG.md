@@ -29,6 +29,19 @@ reconnaissance project that found there was nothing to build.
 - Dropped the "Is there a Windows version?" section. The answer is still no, but
   a README is not the place to litigate a question nobody reading it asked.
 - Layout no longer lists an empty `analysis/`.
+- **The README is documentation now, not a work log.** It was written while the
+  work was happening and read that way: a `Status: Closed` header, phase labels
+  (`What P0 found`), and a narrative in the tense of a project still deciding
+  what it was. All of it had been overtaken. It now opens with what the disc is
+  and what was found, and the one line a visitor needs about this repo being
+  finished sits in the intro instead of a section of its own.
+- The roadmap said the next step in macrecomp was "a run of HyperCard past that
+  point, with `FSDispatch` and SANE still stubbed". `FSDispatch` landed;
+  HyperCard now opens this disc's stacks and navigates between cards, and the
+  blocker is a HyperTalk compile error further in. SANE is still a stub, and the
+  roadmap now says what kind: its packages pop their selectors so the stack
+  stays balanced, but none of the arithmetic is emulated.
+- `P0`/`P1` phase labels replaced with what they actually were.
 
 
 ### Added

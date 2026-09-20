@@ -7,24 +7,27 @@
 is now wired up as one: macrecomp reads this image directly, and its conformance
 corpus names the fixture and baselines it. Work continues there.
 
-The open blocker in macrecomp is no longer the one this repo's README used to
-point at. Entry-point dispatch has landed — a computed jump into the middle of a
-lifted function now resolves — so the next measurement there is a run of
-HyperCard past that point, with `FSDispatch` and SANE still stubbed.
+macrecomp has since taken HyperCard 1.2.2 well past the point this repo's
+README used to point at: it opens this disc's stacks, draws their cards, and
+follows a click from one card to the next. The blocker there is now a HyperTalk
+compile error on cards deeper in, and SANE is still a stub — its packages pop
+their selectors so the stack stays balanced, but none of the arithmetic is
+emulated.
 
 ## Done
 
-- **P0 — reconnaissance.** Identify the container, mount the volume, list it,
-  and establish what kind of project this is. Answer: not a recompilation one.
-- **P1 — identify the executable.** Extract the single `APPL/WILD` and version
-  it: HyperCard 1.2.2 (Apple, 1987-88). Confirm against macrecomp's existing
+- **Reconnaissance.** Identify the container, mount the volume, list it, and
+  establish what kind of project this is. Answer: not a recompilation one.
+- **Identify the executable.** Extract the single `APPL/WILD` and version it:
+  HyperCard 1.2.2 (Apple, 1987-88). Confirm against macrecomp's existing
   measurements that it is the same binary, not a second fixture.
 
 ## Out of scope
 
 - **A `STAK` parser.** A recompiled HyperCard reads its own stacks with its own
   interpreter; that is the reason to recompile it rather than reimplement it.
-  Revisit only if HyperCard never gets far enough to open a stack.
+  This was to be revisited only if HyperCard never got far enough to open a
+  stack. It did, so it stays out of scope.
 - **A HyperTalk interpreter.** Same argument, and macrecomp scopes a second one
   out on the same grounds.
 - **Extraction and lifting.** Both live in macrecomp, which reads this image
