@@ -12,6 +12,41 @@ reconnaissance project that found there was nothing to build.
 
 ### Added
 
+- **A section on what the catalog actually was.** The Whole Earth Catalog was a
+  paper book, Stewart Brand and the Portola Institute, Menlo Park, autumn 1968,
+  "Access to Tools" under a photograph of the earth. It won the National Book
+  Award in 1971, the only catalog ever to. Steve Jobs called it "Google in
+  paperback form, thirty-five years before Google came along". The 1988 CD-ROM
+  in this repo is the hypertext edition Apple funded and Broderbund shipped:
+  over 9,000 cards linked to one another, browsable by clicking, a year before
+  Tim Berners-Lee wrote the proposal for the Web and three before the first web
+  page. That is the reason this disc is worth the trouble, and the README never
+  said so.
+
+- **An end-to-end path from nothing to lifter input.** The disc is on the
+  Internet Archive as `EWEC.img`, a bare HFS volume: no partition map, no ISO
+  9660, no 2352-byte sectors, nothing to convert. The README now gives the
+  `curl`, the listing, and the `extract_resources.py` handoff that leaves 22
+  `CODE` segments in `work/hypercard/code/`. Every command was run verbatim
+  against that download.
+
+### Changed
+
+- The README told you to bring your own rip and convert Mode1/2352 BIN/CUE by
+  hand, with no command to do it and a code block containing nothing but the
+  filename `original/wec.iso`. The Archive image needs none of that; the rip
+  path is kept as a footnote for anyone holding a physical disc, including the
+  detail that a real rip reports `HFS at 15360` where the Archive image reports
+  `HFS at 0`.
+- The Archive image lists **281** files, not 279. The two extra are Mac OS
+  desktop-database leftovers in `/TheVolumeSettingsFolder/` from a read-write
+  mount, not disc content. Said so rather than letting the count look wrong.
+- Credits split the copyright properly: the electronic edition is Broderbund's,
+  the catalog and its contents are Point Foundation's and its authors'.
+
+
+### Added
+
 - **A screenshot of the catalog actually running** (`docs/catalog.png`), and the
   README brought up to date around it. The reconnaissance here pointed at
   [macrecomp](https://github.com/sp00nznet/macrecomp), and macrecomp's

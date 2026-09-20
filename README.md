@@ -1,30 +1,130 @@
 # The Electronic Whole Earth Catalog — Static Recompilation
 
-The Electronic Whole Earth Catalog (Broderbund / Point Foundation, 1988) is a
-Macintosh CD-ROM. This repo works out what is actually on it, and ships the
-classic-HFS lister that reads it.
+The Electronic Whole Earth Catalog (Broderbund, 1988) is a Macintosh CD-ROM.
+This repo works out what is actually on it, ships the classic-HFS lister that
+reads it, and hands the result to
+[macrecomp](https://github.com/sp00nznet/macrecomp).
 
 The short answer: the disc holds no Broderbund executable. The catalog is
 HyperCard stacks, and the only program on the volume is **HyperCard 1.2.2**
 itself. So the thing worth recompiling was never this title — it was the
-interpreter underneath it, which is now a named fixture in
-[macrecomp](https://github.com/sp00nznet/macrecomp).
+interpreter underneath it.
 
-![The catalog's HEALTH section, running under macrecomp's recompiled
-HyperCard 1.2.2](docs/catalog.png)
+## The catalog
+
+Worth knowing what this disc is, because it is not an ordinary piece of 1988
+shovelware.
+
+The **Whole Earth Catalog** was a paper book. Stewart Brand and the Portola
+Institute put out the first one in Menlo Park in the autumn of 1968, an
+oversized paperback with the whole earth on the cover and the words *Access to
+Tools* under it. It reviewed things — looms, chainsaws, books, calculators,
+geodesic domes — and told you where to send the cheque. In 1971 it won the
+National Book Award, the only catalog ever to do so. Steve Jobs, giving the
+Stanford commencement address in 2005, called it *"sort of like Google in
+paperback form, thirty-five years before Google came along"*, and closed by
+quoting the back cover of the final 1974 edition: *Stay hungry. Stay foolish.*
+
+So: an index of everything, cross-referenced by hand, decades before anyone
+could type a query into a box.
+
+The **electronic** edition is the interesting part for this repo. Apple funded a
+hypertext version built in HyperCard — Bill Atkinson's, bundled with every Mac
+since 1987 — and Broderbund shipped it on CD-ROM in 1988, with Stewart Brand and
+Kevin Kelly. Over 9,000 cards, linked to one another, browsable by clicking.
+
+Tim Berners-Lee did not write his proposal for the World Wide Web until March
+1989, and the first web page went up in 1991. This disc was doing hyperlinked
+browsing a year before the Web was proposed, and doing it offline, off a disc
+that shipped in a box. It is the web before the web, and the whole of it fits in
+450 MB.
+
+That is what is being recompiled here: not a game, but one of the first things
+that ever worked the way the internet does.
+
+![The catalog's HEALTH section, running under macrecomp's recompiled HyperCard 1.2.2](docs/catalog.png)
 
 macrecomp's recompiled HyperCard 1.2.2 opening this disc's `HEALTH` stack at the
-Macintosh's 512×342, reached by clicking from Home through the catalog's table of
-contents. Navigation between cards works; cards deeper in still hit a HyperTalk
-error.
+Macintosh's 512×342, reached by clicking from Home through the catalog's table
+of contents. Navigation between cards works; cards deeper in still hit a
+HyperTalk error.
 
 This repo is finished — it is the reconnaissance and the lister, and it is not
 growing. The recompilation continues in macrecomp.
 
+## Getting started
+
+Everything below runs from a clean machine and ends with HyperCard's 68k code
+extracted and ready for the lifter. You do not need to rip anything: the disc is
+on the Internet Archive as a plain HFS volume image.
+
+**Prerequisites** — Python 3.9 or newer.
+
+**1. Get the repo and the disc image** (450 MB; `original/` is gitignored):
+
+```bash
+git clone https://github.com/sp00nznet/wholeearth.git
+cd wholeearth
+mkdir -p original
+curl -L -o original/EWEC.img \
+  https://archive.org/download/the-electronic-whole-earth-catalog/EWEC.img
+```
+
+That file is a bare HFS volume — no partition map, no ISO 9660, no 2352-byte
+sectors. Nothing needs converting.
+
+**2. List it:**
+
+```bash
+pip install machfs
+python tools/hfsls.py original/EWEC.img
+```
+
+One line per file: data fork, resource fork, TYPE/CREATOR, path.
+
+```
+original/EWEC.img  HFS at 0  volume 'Untitled'
+   4153344      67974  STAK/WILD  /COMMUNICATIONS
+   1622016      67532  STAK/WILD  /COMMUNITY
+         0     400640  APPL/WILD  /HyperCard
+```
+
+**281 files.** 279 of them are the catalog; the other two sit in
+`/TheVolumeSettingsFolder/` and are Mac OS desktop-database leftovers from
+whenever the volume was last mounted read-write, not disc content.
+
+**3. Hand it to macrecomp** — it reads this image directly:
+
+```bash
+pip install macresources
+git clone https://github.com/sp00nznet/macrecomp ../macrecomp
+python ../macrecomp/tools/extract_resources.py original/EWEC.img -o work/hypercard
+```
+
+```
+volume 'Untitled'  app '/HyperCard'  type=b'APPL' creator=b'WILD' data=0 rsrc=400640
+jump table: 1110 functions over 21 segments -> work/hypercard/jumptable.json
+
+264 resources -> work/hypercard/  (by size:)
+  CODE  x 22    326088 B
+  ICON  x104     13312 B
+  snd   x  3     13158 B
+  WTLK  x  4     12248 B
+```
+
+`work/hypercard/code/CODE_*.bin` is what the lifter consumes. From here it is
+macrecomp's README: lift the segments, build, run.
+
+**If you have your own rip** instead, it is likely Mode1/2352 BIN/CUE. Strip the
+16-byte sync/header and 288-byte ECC from each 2352-byte sector to get plain
+sectors. A rip of the physical disc *does* carry an Apple partition map, so
+`hfsls.py` reports `HFS at 15360` rather than `HFS at 0`. Both work. If you see
+`no CD001` errors or a stack trace from `machfs`, the image is still raw
+2352-byte sectors.
+
 ## What is on the disc
 
-It is a Mode1/2352 BIN/CUE rip. Converted to plain sectors as `wec.iso`, it is
-not ISO 9660 at all:
+A rip of the physical disc, converted to plain sectors, is not ISO 9660:
 
 ```
 offset 0x0000   'ER'  Apple Driver Descriptor Record
@@ -90,49 +190,6 @@ and an Apple partition map, with the HFS volume at whatever block the
 logic now lives in macrecomp's `load_hfs`, so **every** CD-sourced classic-Mac
 title is reachable, not just this one.
 
-## Getting started
-
-**Prerequisites**
-
-- Python 3.9 or newer
-- `pip install machfs` (pure Python; nothing to compile)
-- Your own copy of the disc. It is in copyright and is not distributed here.
-
-**Steps**
-
-1. Clone this repo and enter it:
-   ```bash
-   git clone https://github.com/sp00nznet/wholeearth.git
-   cd wholeearth
-   ```
-2. Install the one dependency:
-   ```bash
-   pip install machfs
-   ```
-3. Put your own disc image in `original/` (gitignored). If you have a BIN/CUE
-   rip, convert the Mode1/2352 track to plain sectors first — any tool that
-   strips the 16-byte sync/header and 288-byte ECC per 2352-byte sector will do:
-   ```
-   original/wec.iso
-   ```
-4. Confirm it works:
-   ```bash
-   python tools/hfsls.py original/wec.iso
-   ```
-
-**Expected output** — one line per file (data fork, resource fork,
-TYPE/CREATOR, path), 279 of them, beginning:
-
-```
-original/wec.iso  HFS at 15360  volume 'Untitled'
-   4153344      67974  STAK/WILD  /COMMUNICATIONS
-   1622016      67532  STAK/WILD  /COMMUNITY
-         0     400640  APPL/WILD  /HyperCard
-```
-
-If you see `no CD001` errors or a stack trace from `machfs`, the image is
-probably still raw 2352-byte sectors — go back to step 3.
-
 ## Usage
 
 List any classic-HFS Mac disc image, not just this one:
@@ -148,13 +205,6 @@ Self-check (no disc needed):
 
 ```bash
 python tools/test_hfsls.py
-```
-
-To go further than listing — extract an application's resources and measure it —
-use macrecomp, which reads this image directly:
-
-```bash
-python macrecomp/tools/extract_resources.py original/wec.iso -o work/hypercard
 ```
 
 There is nothing to build here: two Python files, one dependency, no compiled
@@ -175,7 +225,7 @@ See [ROADMAP.md](ROADMAP.md) for the rest of what is out of scope and why.
 
 ```
 wholeearth/
-  original/   the .7z, the .bin/.cue, and wec.iso converted from it (gitignored)
+  original/   EWEC.img and anything else you bring (gitignored)
   tools/      hfsls.py -- list a classic-HFS Mac disc image
               test_hfsls.py -- its self-check
   docs/       catalog.png -- the screenshot above
@@ -183,13 +233,16 @@ wholeearth/
 
 ## Credits
 
-The Electronic Whole Earth Catalog © 1988 Broderbund Software / Point
-Foundation. HyperCard © Apple Computer. This project contains no code or data
-from either, and distributes neither; the screenshot above is a single frame of
-the running program, included to show what the reconnaissance was for.
+The Electronic Whole Earth Catalog © 1988 Broderbund Software; the Whole Earth
+Catalog and its contents © Point Foundation and the respective authors.
+HyperCard © Apple Computer. This project contains no code or data from any of
+them, and distributes none; the screenshot above is a single frame of the
+running program, included to show what the reconnaissance was for.
 
 - **[machfs](https://github.com/tashtego/machfs)** by Elliot Nunn — pure-Python
   HFS parsing. `hfsls.py` stands on it.
+- **[The Internet Archive](https://archive.org/details/the-electronic-whole-earth-catalog)**
+  for preserving the disc.
 
 ## License
 
