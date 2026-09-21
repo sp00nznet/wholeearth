@@ -42,12 +42,13 @@ that shipped in a box. It is the web before the web, and the whole of it fits in
 That is what is being recompiled here: not a game, but one of the first things
 that ever worked the way the internet does.
 
-![The catalog's HEALTH section, running under macrecomp's recompiled HyperCard 1.2.2](docs/catalog.png)
+![The catalog's HEALTH contents card, running under macrecomp's recompiled HyperCard 1.2.2](docs/catalog.png)
 
 macrecomp's recompiled HyperCard 1.2.2 opening this disc's `HEALTH` stack at the
 Macintosh's 512×342, reached by clicking from Home through the catalog's table
-of contents. Navigation between cards works; cards deeper in still hit a
-HyperTalk error.
+of contents. Cards navigate, scripts compile and run, and the card art decodes;
+the bitmap expander still stops about two thirds of the way down a card, which
+is the white band under the illustration.
 
 This repo is finished — it is the reconnaissance and the lister, and it is not
 growing. The recompilation continues in macrecomp.
