@@ -10,10 +10,9 @@ corpus names the fixture and baselines it. Work continues there.
 macrecomp has since taken HyperCard 1.2.2 well past the point this repo's
 README used to point at: it opens this disc's stacks, draws their cards and
 their artwork, runs their scripts, and follows a click from one card to the
-next. What is left there is the bitmap expander, which stops about two thirds
-of the way down a card, and SANE, still a stub -- its packages pop their
-selectors so the stack stays balanced, but none of the arithmetic is
-emulated.
+next. Cards paint in full, all 342 rows. What is left there is SANE, still a
+stub -- its packages pop their selectors so the stack stays balanced, but none
+of the arithmetic is emulated.
 
 ## Done
 

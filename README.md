@@ -46,9 +46,8 @@ that ever worked the way the internet does.
 
 macrecomp's recompiled HyperCard 1.2.2 opening this disc's `HEALTH` stack at the
 Macintosh's 512×342, reached by clicking from Home through the catalog's table
-of contents. Cards navigate, scripts compile and run, and the card art decodes;
-the bitmap expander still stops about two thirds of the way down a card, which
-is the white band under the illustration.
+of contents. Cards navigate, scripts compile and run, and the card bitmap
+decodes in full -- all 342 rows of it, illustration included.
 
 This repo is finished — it is the reconnaissance and the lister, and it is not
 growing. The recompilation continues in macrecomp.
